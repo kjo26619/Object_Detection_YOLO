@@ -52,6 +52,40 @@ YOLO 네트워크의 최종 Output은 SxSx30 으로 나오게 됩니다.
 
 30은 No. Bbox * 5 + No. Class 의 식에서 20개의 클래스와 2개의 Bounding Box를 선택했을 때 나오게 됩니다.
 
+## YOLO의 Loss Function
+
+YOLO의 출력에서는 Bounding Box의 width 및 height를 이미지 width와 height로 정규화하여 0과 1이 되도록 합니다.
+
+그리고 x 및 y 좌표를 Grid 셀 위치를 오프셋으로 0과 1 사이에 바운드되도록 합니다.
+
+그리고 Sum-Squared Error를 최적화합니다.
+
+Sum-Squared Error가 최적화하기 쉽지만, 평균 Precision을 최대화하지 않을 수 있습니다. 이 때문에 가중치를 사용합니다.
+
+그리고, 이미지의 많은 Grid Cell에 Object가 포함되지 않을 수 있습니다.
+
+이럴 경우 신뢰도 점수가 0이 되며, Object를 포함한 셀의 Gradient가 강해지는 경향을 갖습니다.
+
+이들을 해결하기 위해 Bounding Box 좌표 예측의 손실을 늘리고 개체를 포함하지 않는 Box에 대한 신뢰 예측의 손실을 줄입니다.
+
+이를 각각 ![lambda1](https://latex.codecogs.com/gif.latex?%5Clambda_%7Bcoord%7D)과 ![lambda2](https://latex.codecogs.com/gif.latex?%5Clambda_%7Bnoobj%7D) 로 나타내며 각각 5와 .5로 설정했습니다.
+
+![img2](https://github.com/kjo26619/Object_Detection_YOLO/blob/main/YOLO_Loss.PNG)
+
+YOLO에서 트레이닝을 위해 사용하는 Loss Function은 다음과 같습니다.
+
+길지만 큰 문제 없이 각 x, y, w, h, C에 대한 Sum Squared Loss입니다. 
+
+여기서, ![obj1](https://latex.codecogs.com/gif.latex?1%5E%7Bobj%7D_i)는 Cell i에서 Object가 나타나는지 여부입니다.
+
+![obj2](https://latex.codecogs.com/gif.latex?1%5E%7Bobj%7D_%7Bij%7D)는 Cell i에서 j번째 Bounding Box에 대한 책임이라고 나와있는데,
+
+이는 Cell i의 여러 개의 Bounding Box 중 Ground Truth Bounding Box와 가장 높은 IoU를 갖는 Bounding Box가 1을 갖게 되는 것입니다.
+
+즉, 하나의 Bounding Box만 적용이 되는 것입니다.
+
+![obj3](https://latex.codecogs.com/gif.latex?1%5E%7Bnoobj%7D_%7Bij%7D) 는 Object를 찾지 못했을 경우의 책임입니다.
+
 # YOLO의 성능
 
 YOLO는 Titan X GPU를 사용하여 Batch 없이 진행 했을 경우 45FPS가 나왔고, Fast Version은 150 FPS가 나왔다고 합니다.
@@ -59,3 +93,5 @@ YOLO는 Titan X GPU를 사용하여 Batch 없이 진행 했을 경우 45FPS가 �
 YOLO의 등장으로 스트리밍 비디오를 처리할 수 있게 되었다고 봐도 무방할 정도입니다.
 
 Fast YOLO는 적은 수의 Convolution Layers를 사용하여 24개 대신 9개만 사용합니다. 그 외에 파라미터는 모두 동일합니다.
+
+
