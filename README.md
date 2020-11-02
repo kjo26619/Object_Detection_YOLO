@@ -42,6 +42,7 @@ Grid가 나뉘었으면 각 Grid Cell 마다 Object를 감지하고 Bounding Box
 ## YOLO의 네트워크
 
 ![img1](https://github.com/kjo26619/Object_Detection_YOLO/blob/main/YOLO.PNG)
+( 출처 : https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf )
 
 YOLO는 예측한 Bounding Box의 x,y,w,h와 class별 확률 그리고 Object가 있을 확률을 가지고 네트워크에 학습을 합니다.
 
